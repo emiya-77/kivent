@@ -3,6 +3,8 @@ import "./globals.css";
 import Header from "@/components/header";
 import { Inter, Courier_Prime } from 'next/font/google'
 import { ConvexClientProvider } from "./ConvexClientProvider";import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from '@clerk/ui/themes'
+import { shadcn } from '@clerk/ui/themes'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -29,7 +31,14 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <ClerkProvider>
+          <ClerkProvider
+            appearance={{
+              theme: shadcn,
+              options: {
+                showOptionalFields: true,
+              },
+            }}
+          >
             <ConvexClientProvider>
 
               {/* Header */}

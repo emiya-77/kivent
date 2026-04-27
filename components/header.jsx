@@ -1,6 +1,11 @@
+"use client"
+
+import { SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import { Button } from './ui/button'
+import { Authenticated, Unauthenticated } from 'convex/react'
 
 const Header = () => {
   return (
@@ -24,9 +29,26 @@ const Header = () => {
           {/* Search & Location - Desktop Only */}
 
           {/* Right Side Actions */}
+          <div className='flex items-center'>
+
+            <Authenticated>
+              {/* Create Event */}
+
+              <UserButton />
+            </Authenticated>
+
+            <Unauthenticated>
+              <SignInButton mode="modal">
+                <Button size="sm">Sign In</Button>
+              </SignInButton>
+              
+            </Unauthenticated>
+          </div>
         </div>
 
         {/* Mobile Search & Location - Below Header */}
+
+        {/* Loader */}
       </nav>
 
       {/* Modals */}
