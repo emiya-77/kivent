@@ -1,6 +1,17 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import Header from "@/components/header";
+import { Inter, Courier_Prime } from 'next/font/google'
+
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap', 
+})
+
+const courierPrime = Courier_Prime({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+})
 
 export const metadata = {
   title: "Kivent",
@@ -10,7 +21,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`bg-linear-to-br from-gray-950 via-zinc-900 to-stone-900 text-white`}>
+      <body className={`${courierPrime.className} bg-linear-to-br from-gray-950 via-zinc-900 to-stone-900 text-white`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
