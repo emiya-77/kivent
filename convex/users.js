@@ -4,34 +4,38 @@ export const store = mutation({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
+
+    console.log("Identity Object:", JSON.stringify(identity, null, 2));
+
     if (!identity) {
       throw new Error("Called storeUser without authentication present");
     }
 
-    // Check if we've already stored this identity before.
-    // Note: If you don't want to define an index right away, you can use
-    // ctx.db.query("users")
-    //  .filter(q => q.eq(q.field("tokenIdentifier"), identity.tokenIdentifier))
-    //  .unique();
+    // 1. Force extraction of the name from all possible sources
+    // We check customClaims because that's where Clerk puts dashboard template data
+    const name = identity.name || identity.customClaims?.name || "Anonymous";
+    const email = identity.email || identity.customClaims?.email || "";
+
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
+
     if (user !== null) {
-      // If we've seen this identity before but the name has changed, patch the value.
-      if (user.name !== identity.name) {
-        await ctx.db.patch(user._id, { name: identity.name });
+      if (user.name !== name) {
+        await ctx.db.patch(user._id, { name });
       }
       return user._id;
     }
-    // If it's a new identity, create a new `User`.
+
+    // 2. Use the local variable 'name' so it's guaranteed to be a string
     return await ctx.db.insert("users", {
-        name: identity.name ?? "Anonymous",
+        name: name, 
         tokenIdentifier: identity.tokenIdentifier,
-        email: identity.email ?? "",
-        imageUrl: identity.pictureUrl,
+        email: email,
+        imageUrl: identity.pictureUrl || identity.customClaims?.picture || "",
         hasCompletedOnboarding: false,
         freeEventsCreated: 0,
         createdAt: Date.now(),
