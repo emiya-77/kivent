@@ -6,6 +6,7 @@ import Link from 'next/link'
 import React from 'react'
 import { Button } from './ui/button'
 import { Authenticated, Unauthenticated } from 'convex/react'
+import { BarLoader } from 'react-spinners'
 
 const Header = () => {
   return (
@@ -15,7 +16,7 @@ const Header = () => {
           {/* Logo */}
           <Link href={"/"} className="flex items-center">
             <Image 
-              src="/kivent_logo.png"
+              src="/kivent_logo_warm.png"
               alt="Spott logo"
               width={500}
               height={500}
@@ -49,6 +50,9 @@ const Header = () => {
         {/* Mobile Search & Location - Below Header */}
 
         {/* Loader */}
+        <div className='absolute bottom-0 left-0 w-full'>
+          <BarLoader width={'100%'} color="#ff4b33" />
+        </div>
       </nav>
 
       {/* Modals */}
