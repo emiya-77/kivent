@@ -25,7 +25,10 @@ export const store = mutation({
 
     if (user !== null) {
       if (user.name !== name) {
-        await ctx.db.patch(user._id, { name });
+        await ctx.db.patch(user._id, { 
+          name, 
+          updatedAt: Date.now(),
+        });
       }
       return user._id;
     }

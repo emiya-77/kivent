@@ -38,7 +38,7 @@ const Header = () => {
           {/* Right Side Actions */}
           <div className='flex items-center'>
 
-            <Button variant={'ghost'} size='sm' onClick={setShowUpgradeModal}>
+            <Button variant={'ghost'} size='sm' onClick={() => setShowUpgradeModal(true)}>
               Pricing
             </Button>
 
