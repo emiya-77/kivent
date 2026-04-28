@@ -27,5 +27,49 @@ export default defineSchema({
         // Timestamps
         createdAt: v.number(),
         updatedAt: v.number(),
-    }).index("by_token", ["tokenIdentifier"])
+    }).index("by_token", ["tokenIdentifier"]),
+
+    events: defineTable({
+        title: v.string(),
+        description: v.string(),
+        slug: v.string(),
+
+        // Organizer
+        organizerId: v.id("users"),
+        organizerName: v.string(),
+
+        // Event Details
+        category: v.string(),
+        tags: v.array(v.string()),
+        startDate: v.number(),
+        endDate: v.number(),
+
+        // Location
+        location: v.union(v.literal("physical"), v.literal("virtual")),
+        venue: v.optional(v.string()),
+        address: v.optional(v.string()),
+        city: v.optional(v.string()),
+        state: v.optional(v.string()),
+
+        // Capacity & Ticketing
+        capacity: v.number(),
+        ticketType: v.union(v.literal("free"), v.literal("paid")),
+        ticketPrice: v.optional(v.number()), // Paid at event (offline)
+        registrationCount: v.number(),
+
+        // Customization
+        coverImage: v.optional(v.string()),
+        themeColor: v.optional(v.string()),
+        
+        // Timestamps
+        createdAt: v.number(),
+        updatedAt: v.number(),
+    })
+    .index("by_organizer", ["organizerId"])
+    .index("by_category", ["category"])
+    .index("by_start_date", ["startDate"])
+    .index("by_slug", ["slug"])
+    .searchIndex("search_title", {searchField: "title"}),
+
+    registrations: defineTable({}),
 })
