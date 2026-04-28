@@ -74,7 +74,7 @@ const Header = () => {
             </Authenticated>
 
             <Unauthenticated>
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" forceRedirectUrl={typeof window !== 'undefined' ? window.location.href : undefined}>
                 <Button size="sm">Sign In</Button>
               </SignInButton>
             </Unauthenticated>
