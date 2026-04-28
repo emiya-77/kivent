@@ -1,6 +1,5 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { register } from "next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup";
 
 export default defineSchema({
     // Users Table
@@ -42,15 +41,19 @@ export default defineSchema({
         // Event Details
         category: v.string(),
         tags: v.array(v.string()),
+
+        // Date & Time
         startDate: v.number(),
         endDate: v.number(),
+        timezone: v.string(),
 
         // Location
-        location: v.union(v.literal("physical"), v.literal("virtual")),
+        locationType: v.union(v.literal("physical"), v.literal("virtual")),
         venue: v.optional(v.string()),
         address: v.optional(v.string()),
-        city: v.optional(v.string()),
+        city: v.string(),
         state: v.optional(v.string()),
+        country: v.string(),
 
         // Capacity & Ticketing
         capacity: v.number(),
@@ -79,6 +82,9 @@ export default defineSchema({
         // Attendee info
         attendeeName: v.string(),
         attendeeEmail: v.string(),
+
+        // QR Code for entry
+        qrCode: v.string(), // Unique ID for QR
 
         // Check-in
         checkedIn: v.boolean(),
