@@ -5,6 +5,7 @@ import { Inter, Courier_Prime } from 'next/font/google'
 import { ConvexClientProvider } from "./ConvexClientProvider";import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from '@clerk/ui/themes'
 import { shadcn } from '@clerk/ui/themes'
+import { Toaster } from "sonner";
 
 const inter = Inter({ 
   subsets: ['latin'],
