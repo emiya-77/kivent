@@ -57,6 +57,7 @@ export default function RootLayout({ children }) {
                 <footer className="border-t border-gray-800/50 py-8 px-6 max-w-7xl mx-auto">
                   <div className="text-sm text-gray-400">Made with ❤️ by kib</div>
                 </footer>
+                <Toaster richColors />
               </main>
 
             </ConvexClientProvider>
