@@ -1,9 +1,11 @@
 import React from 'react'
 import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
-import { Badge, Calendar, MapPin, Trash2 } from 'lucide-react'
-import { getCategoryLabel } from '@/lib/data'
+import { Calendar, MapPin, Trash2, Users } from 'lucide-react'
+import { getCategoryIcon, getCategoryLabel } from '@/lib/data'
 import { Button } from './ui/button'
+import { format } from 'date-fns'
+import { Badge } from './ui/badge'
 
 const EventCard = ({
     event,

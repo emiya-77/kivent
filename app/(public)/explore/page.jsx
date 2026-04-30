@@ -30,8 +30,8 @@ const ExplorePage = () => {
   const {data: localEvents, isLoading: loadingLocal} = useConvexQuery(
     api.explore.getEventsByLocation,
     {
-      city: currentUser?.location?.city || "Dhaka",
-      state: currentUser?.location?.state || "Dhaka",
+      city: currentUser?.location?.city || "Gurugram",
+      state: currentUser?.location?.state || "Haryana",
       limit: 4,
     }
   );
