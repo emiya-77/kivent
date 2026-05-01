@@ -27,13 +27,11 @@ const ExplorePage = () => {
     { limit: 3 }
   );
 
-  console.log("Featured Events:", featuredEvents);
-
   const { data: localEvents, isLoading: loadingLocal } = useConvexQuery(
     api.explore.getEventsByLocation,
     {
-      city: currentUser?.location?.city || "Gurugram",
-      state: currentUser?.location?.state || "Haryana",
+      city: currentUser?.location?.city || "Dhaka",
+      state: currentUser?.location?.state || "Dhaka",
       limit: 4,
     }
   );
@@ -250,7 +248,27 @@ const ExplorePage = () => {
           </div>
         </div>
       )}
+
       {/* Empty State */}
+      {!loadingFeatured &&
+        !loadingLocal &&
+        !loadingPopular &&
+        (!featuredEvents || featuredEvents.length === 0) &&
+        (!localEvents || localEvents.length === 0) &&
+        (!popularEvents || popularEvents.length === 0) && (
+          <Card className="p-12 text-center">
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold">No events yet :(</h2>
+              <p className="text-muted-foreground">
+                Be the first to create an event in your area :3!
+              </p>
+              <Button asChild className="gap-2">
+                <a href="/create-event">Create Event</a>
+              </Button>
+            </div>
+          </Card>
+        )}
     </>
   );
 }
