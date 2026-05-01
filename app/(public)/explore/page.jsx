@@ -3,9 +3,11 @@
 import EventCard from "@/components/event-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { api } from "@/convex/_generated/api"
 import { useConvexQuery } from "@/hooks/use-convex-query"
+import { CATEGORIES } from "@/lib/data";
 import { createLocationSlug } from "@/lib/locations-utils";
 import { format } from "date-fns";
 import Autoplay from "embla-carousel-autoplay";
@@ -16,18 +18,18 @@ import { useRef } from "react";
 
 const ExplorePage = () => {
   // Fetch current user for location
-  const {data: currentUser} = useConvexQuery(api.users.getCurrentUser);
+  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser);
   const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: true }));
   const router = useRouter();
 
-  const {data: featuredEvents, isLoading: loadingFeatured} = useConvexQuery(
+  const { data: featuredEvents, isLoading: loadingFeatured } = useConvexQuery(
     api.explore.getFeatureEvents,
-    {limit: 3}
+    { limit: 3 }
   );
 
   console.log("Featured Events:", featuredEvents);
 
-  const {data: localEvents, isLoading: loadingLocal} = useConvexQuery(
+  const { data: localEvents, isLoading: loadingLocal } = useConvexQuery(
     api.explore.getEventsByLocation,
     {
       city: currentUser?.location?.city || "Gurugram",
@@ -36,17 +38,28 @@ const ExplorePage = () => {
     }
   );
 
-  const {data: popularEvents, isLoading: loadingPopular} = useConvexQuery(
+  const { data: popularEvents, isLoading: loadingPopular } = useConvexQuery(
     api.explore.getPopularEvents,
-    {limit: 6}
+    { limit: 6 }
   );
 
-  const {data: categoryCounts} = useConvexQuery(
+  const { data: categoryCounts } = useConvexQuery(
     api.explore.getCategoryCounts
   );
 
+  const categoriesWithCounts = CATEGORIES.map((cat) => {
+    return {
+      ...cat,
+      count: categoryCounts?.[cat.id] || 0,
+    }
+  })
+
   const handleEventClick = (slug) => {
     router.push(`/explore/${slug}`);
+  }
+
+  const handleCategoryClick = (categoryId) => {
+    router.push(`/events/${categoryId}`);
   }
 
   const handleViewLocalEvents = () => {
@@ -61,7 +74,7 @@ const ExplorePage = () => {
   // Loading state
   const isLoading = loadingFeatured || loadingLocal || loadingPopular;
 
-  if(isLoading){
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
@@ -79,10 +92,10 @@ const ExplorePage = () => {
       </div>
 
       {/* Featured Carousel */}
-      {featuredEvents && featuredEvents.length > 0 && 
+      {featuredEvents && featuredEvents.length > 0 &&
         <div className="mb-16">
           <Carousel
-            className="w-full" 
+            className="w-full"
             plugins={[plugin.current]}
             onMouseEnter={plugin.current.stop}
             onMouseLeave={plugin.current.reset}
@@ -90,12 +103,12 @@ const ExplorePage = () => {
             <CarouselContent>
               {featuredEvents.map((event) => (
                 <CarouselItem key={event._id}>
-                  <div 
+                  <div
                     onClick={() => handleEventClick(event.slug)}
                     className="relative h-100 rounded-xl overflow-hidden cursor-pointer"
                   >
                     {event.coverImage ? (
-                      <Image 
+                      <Image
                         src={event.coverImage}
                         alt={event.title}
                         fill
@@ -103,7 +116,7 @@ const ExplorePage = () => {
                         priority
                       />
                     ) : (
-                      <div 
+                      <div
                         className="absolute inset-0"
                         style={{
                           backgroundColor: event.themeColor
@@ -179,7 +192,7 @@ const ExplorePage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {localEvents.map((event) => (
-              <EventCard 
+              <EventCard
                 key={event._id}
                 event={event}
                 variant="grid"
@@ -191,6 +204,31 @@ const ExplorePage = () => {
       )}
 
       {/* Browse by Category */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold mb-6">Browse by Category</h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {categoriesWithCounts.map((category) => {
+            return <Card
+              key={category.id}
+              className="py-2 group cursor-pointer hover:shadow-lg transition-all hover:border-orange-500/50"
+              onClick={() => handleCategoryClick(category.id)}
+            >
+              <CardContent className="px-3 sm:p-6 flex items-center gap-3">
+                <div className="text-3xl sm:text-4xl">{category.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold mb-1 group-hover:text-orange-400 transition-colors">
+                    {category.label}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {category.count} Event{category.count !== 1 ? "s" : ""}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          })}
+        </div>
+      </div>
 
       {/* Popular Events */}
 
