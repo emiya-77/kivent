@@ -9,6 +9,7 @@ import { api } from "@/convex/_generated/api"
 import { useConvexQuery } from "@/hooks/use-convex-query"
 import { CATEGORIES } from "@/lib/data";
 import { createLocationSlug } from "@/lib/locations-utils";
+import { divisions_en } from "bangladesh-location-data";
 import { format } from "date-fns";
 import Autoplay from "embla-carousel-autoplay";
 import { ArrowRight, Calendar, Loader2, MapPin, Users } from "lucide-react";
@@ -66,8 +67,10 @@ const ExplorePage = () => {
 
     const slug = createLocationSlug(city, state);
 
-    router.push(`/explore/local?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`);
+    router.push(`/explore/${slug}`);
   }
+
+  console.log("Devisions: ", divisions_en)
 
   // Loading state
   const isLoading = loadingFeatured || loadingLocal || loadingPopular;
