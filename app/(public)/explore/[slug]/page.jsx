@@ -70,7 +70,7 @@ const DynamicExplorePage = () => {
             </p>
           )}
         </div>
-        
+
         {events && events.length > 0 ? (
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
               {events.map((event) => (
@@ -91,7 +91,39 @@ const DynamicExplorePage = () => {
   }
 
   return (
-    <div>DynamicExplorePage</div>
+    <>
+      <div className='pb-5'>
+        <div className='flex items-center gap-4 mb-4'>
+          <div className='text-6xl'>📍</div>
+          <div>
+            <h1 className='text-5xl md:text-6xl font-bold'>Events in {city}</h1>
+            <p className='text-lg text-muted-foreground mt-2'>{state}, Bangladesh</p>
+          </div>
+        </div>
+
+        {events && events.length > 0 && (
+          <p className='text-muted-foreground'>
+            {events.length} event{events.length !== 1 ? "s": ""}
+          </p>
+        )}
+      </div>
+      
+      {events && events.length > 0 ? (
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            {events.map((event) => (
+              <EventCard 
+                key={event._id}
+                event={event}
+                onClick={() => handleEventClick(event.slug)}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className='text-muted-foreground'>
+            No events found in this category
+          </p>
+        )}
+    </>
   )
 }
 
