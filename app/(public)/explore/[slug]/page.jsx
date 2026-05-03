@@ -1,9 +1,11 @@
 "use client"
 
 import EventCard from '@/components/event-card';
+import { api } from '@/convex/_generated/api';
 import { useConvexQuery } from '@/hooks/use-convex-query';
 import { CATEGORIES } from '@/lib/data';
 import { parseLocationSlug } from '@/lib/locations-utils';
+import { Loader2 } from 'lucide-react';
 import { notFound, useParams, useRouter } from 'next/navigation';
 
 const DynamicExplorePage = () => {
