@@ -54,7 +54,7 @@ export const getCurrentUser = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Called getCurrentUser without authentication present");
+      return null;
     }
 
     const user = await ctx.db
@@ -84,6 +84,10 @@ export const completeOnboarding = mutation({
   },
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getCurrentUser)
+
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     await ctx.db.patch(user._id, {
       location: args.location,

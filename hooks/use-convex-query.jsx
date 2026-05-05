@@ -10,25 +10,25 @@ export const useConvexQuery = (query, ...args) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if(result === undefined){
+        if (result === undefined) {
             setIsLoading(true);
-        }else{
-            try{
+        } else {
+            try {
                 setData(result);
                 setError(null);
-            }catch (err){
+            } catch (err) {
                 setError(err);
                 toast.error(err.message || "An error occurred while fetching data.");
-            }finally{
+            } finally {
                 setIsLoading(false);
             }
         }
     }, [result])
 
-    return { 
-        data, 
-        isLoading, 
-        error 
+    return {
+        data,
+        isLoading,
+        error
     };
 };
 
@@ -36,29 +36,29 @@ export const useConvexMutation = (mutation) => {
     const mutationFn = useMutation(mutation);
 
     const [data, setData] = useState(undefined);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const mutate = async(...args) => {
+    const mutate = async (...args) => {
         setIsLoading(true);
         setError(null);
 
-        try{
+        try {
             const response = await mutationFn(...args);
             setData(response);
             return response;
-        }catch (err){
+        } catch (err) {
             setError(err);
             toast.error(err.message || "An error occurred while performing the action.");
-        }finally{
+        } finally {
             setIsLoading(false);
         }
     }
 
-    return { 
-        mutate, 
-        data, 
-        isLoading, 
-        error 
+    return {
+        mutate,
+        data,
+        isLoading,
+        error
     };
 };

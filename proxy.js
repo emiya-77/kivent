@@ -13,20 +13,21 @@ import { NextResponse } from 'next/server';
 // })
 
 const isProtectedRoute = createRouteMatcher([
-    '/my-events(.*)',
-    '/create-event(.*)',
-    '/edit-event(.*)',
-    '/dashboard(.*)',
-    '/my-tickets(.*)',
+  '/my-events(.*)',
+  '/create-event(.*)',
+  '/edit-event(.*)',
+  '/dashboard(.*)',
+  '/my-tickets(.*)',
+  '/explore'
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-    const { userId, redirectToSignIn } = await auth();
-    if (isProtectedRoute(req) && !userId) {
-        return redirectToSignIn({ returnBackUrl: req.url });
-    }
+  const { userId, redirectToSignIn } = await auth();
+  if (isProtectedRoute(req) && !userId) {
+    return redirectToSignIn({ returnBackUrl: req.url });
+  }
 
-    return NextResponse.next();
+  return NextResponse.next();
 });
 
 export const config = {
