@@ -70,8 +70,6 @@ const ExplorePage = () => {
     router.push(`/explore/${slug}`);
   }
 
-  console.log("Devisions: ", divisions_en)
-
   // Loading state
   const isLoading = loadingFeatured || loadingLocal || loadingPopular;
 
