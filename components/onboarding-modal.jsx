@@ -14,14 +14,16 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Progress } from "./ui/progress"
-import { ArrowRight, Heart, Loader2, MapPin } from "lucide-react"
+import { ArrowLeft, ArrowRight, Heart, Loader2, MapPin } from "lucide-react"
 import { CATEGORIES } from "@/lib/data"
 import { Badge } from "./ui/badge"
 import { useConvexMutation } from "@/hooks/use-convex-query"
 import { toast } from "sonner"
 import { api } from "@/convex/_generated/api"
+import { districts_en, divisions_en } from "bangladesh-location-data"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select"
 
 export function OnboardingModal({ isOpen, onClose, onComplete }) {
     const [step, setStep] = useState(1);
@@ -36,7 +38,21 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
         api.users.completeOnboarding
     );
 
-    console.log("test in onboarding-modal: ", completeOnboarding)
+    const bdDivisions = divisions_en;
+    const districts = districts_en;
+
+    const bdDistricts = useMemo(() => {
+        if (!location.state) return [];
+        const selectedStateId = bdDivisions.find((s) => {
+            if (s.title === location.state) return s.value
+        });
+        console.log("hello: ", selectedStateId)
+
+        if (!selectedStateId) return [];
+        return districts[selectedStateId.value] || []
+    }, [location.state, bdDivisions, districts])
+
+    console.log("test in onboarding-modal: ", bdDivisions, bdDistricts)
 
     const progress = (step / 2) * 100;
 
@@ -129,8 +145,92 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
                             </div>
                         </div>
                     )}
+
+                    {step === 2 && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="state">Division</Label>
+
+                                    <Select
+                                        value={location.state}
+                                        onValueChange={(value) => {
+                                            setLocation({ ...location, state: value, city: "" });
+                                        }}
+                                    >
+                                        <SelectTrigger id="state" className="w-full h-11">
+                                            <SelectValue placeholder="Select division" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {bdDivisions.map((state) => (
+                                                <SelectItem key={state.value} value={state.title}>
+                                                    {state.title}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="city">District</Label>
+
+                                    <Select
+                                        value={location.city}
+                                        onValueChange={(value) => {
+                                            setLocation({ ...location, city: value });
+                                        }}
+                                        disabled={!location.state}
+                                    >
+                                        <SelectTrigger id="city" className="w-full h-11">
+                                            <SelectValue placeholder={
+                                                location.state ? "Select district" : "Division first"
+                                            } />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {bdDistricts.length > 0 ? (
+                                                bdDistricts.map((district) => {
+                                                    console.log("meow: ", district.title)
+                                                    return <SelectItem key={district.title} value={district.title}>
+                                                        {district.title}
+                                                    </SelectItem>
+                                                })
+                                            ) : (
+                                                <SelectItem value="no-districts" disabled>
+                                                    No districts available
+                                                </SelectItem>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            {location.city && location.state && (
+                                <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                                    <div className="flex items-start gap-3">
+                                        <MapPin className="w-5 h-5 text-orange-500 mt-0.5" />
+                                        <div>
+                                            <p className="font-medium">Your location</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {location.city}, {location.state}, {location.country}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
                 <DialogFooter className={'flex gap-3'}>
+                    {step > 1 && (
+                        <Button
+                            variant="outline"
+                            onClick={() => setStep(step - 1)}
+                            className="gap-2"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Back
+                        </Button>
+                    )}
                     <Button
                         className="flex-1 gap-2"
                         disabled={isLoading}
