@@ -52,7 +52,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
         return districts[selectedStateId.value] || []
     }, [location.state, bdDivisions, districts])
 
-    console.log("test in onboarding-modal: ", bdDivisions, bdDistricts)
+    // console.log("in onboarding-modal: ", bdDivisions, bdDistricts)
 
     const progress = (step / 2) * 100;
 
@@ -64,7 +64,24 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
         )
     }
 
-    const handleComplete = async () => { };
+    const handleComplete = async () => {
+        try {
+            await completeOnboarding({
+                location: {
+                    city: location.city,
+                    state: location.state,
+                    country: location.country,
+                },
+                interests: selectedInterests,
+            })
+
+            toast.success("Welcome to Kivent!")
+            onComplete();
+        } catch (error) {
+            toast.error("Failed to complete onboarding");
+            console.error(error);
+        }
+    };
 
     const handleNext = () => {
         if (step === 1 && selectedInterests.length < 3) {
