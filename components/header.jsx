@@ -79,7 +79,6 @@ const Header = () => {
                 <Button size="sm">Sign In</Button>
               </SignInButton>
             </Unauthenticated>
-            <OnboardingModal />
           </div>
         </div>
 
@@ -92,7 +91,7 @@ const Header = () => {
       </nav>
 
       {/* Modals */}
-      {/* <OnboardingModal /> */}
+      <OnboardingModal />
     </>
   )
 }
