@@ -9,6 +9,7 @@ import { api } from "@/convex/_generated/api"
 import { useConvexQuery } from "@/hooks/use-convex-query"
 import { CATEGORIES } from "@/lib/data";
 import { createLocationSlug } from "@/lib/locations-utils";
+import { divisions_en } from "bangladesh-location-data";
 import { format } from "date-fns";
 import Autoplay from "embla-carousel-autoplay";
 import { ArrowRight, Calendar, Loader2, MapPin, Users } from "lucide-react";
@@ -27,13 +28,11 @@ const ExplorePage = () => {
     { limit: 3 }
   );
 
-  console.log("Featured Events:", featuredEvents);
-
   const { data: localEvents, isLoading: loadingLocal } = useConvexQuery(
     api.explore.getEventsByLocation,
     {
-      city: currentUser?.location?.city || "Gurugram",
-      state: currentUser?.location?.state || "Haryana",
+      city: currentUser?.location?.city || "Dhaka",
+      state: currentUser?.location?.state || "Dhaka",
       limit: 4,
     }
   );
@@ -59,7 +58,7 @@ const ExplorePage = () => {
   }
 
   const handleCategoryClick = (categoryId) => {
-    router.push(`/events/${categoryId}`);
+    router.push(`/explore/${categoryId}`);
   }
 
   const handleViewLocalEvents = () => {
@@ -68,8 +67,10 @@ const ExplorePage = () => {
 
     const slug = createLocationSlug(city, state);
 
-    router.push(`/explore/local?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`);
+    router.push(`/explore/${slug}`);
   }
+
+  console.log("Devisions: ", divisions_en)
 
   // Loading state
   const isLoading = loadingFeatured || loadingLocal || loadingPopular;
@@ -231,8 +232,46 @@ const ExplorePage = () => {
       </div>
 
       {/* Popular Events */}
+      {popularEvents && popularEvents.length > 0 && (
+        <div className="mb-16">
+          <div className="mb-6">
+            <h2 className="text-3xl font-bold mb-1">Popular Across Bangladesh</h2>
+            <p className="text-muted-foreground">Trending events nationwide</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {popularEvents.map((event) => (
+              <EventCard
+                key={event._id}
+                event={event}
+                variant="list"
+                onClick={() => handleEventClick(event.slug)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Empty State */}
+      {!loadingFeatured &&
+        !loadingLocal &&
+        !loadingPopular &&
+        (!featuredEvents || featuredEvents.length === 0) &&
+        (!localEvents || localEvents.length === 0) &&
+        (!popularEvents || popularEvents.length === 0) && (
+          <Card className="p-12 text-center">
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold">No events yet :(</h2>
+              <p className="text-muted-foreground">
+                Be the first to create an event in your area :3!
+              </p>
+              <Button asChild className="gap-2">
+                <a href="/create-event">Create Event</a>
+              </Button>
+            </div>
+          </Card>
+        )}
     </>
   );
 }
