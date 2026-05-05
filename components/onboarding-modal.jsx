@@ -33,8 +33,10 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
     });
 
     const { mutate: completeOnboarding, isLoading } = useConvexMutation(
-        api.users.completeOnboardings
+        api.users.completeOnboarding
     );
+
+    console.log("test in onboarding-modal: ", completeOnboarding)
 
     const progress = (step / 2) * 100;
 
