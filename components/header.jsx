@@ -9,6 +9,7 @@ import { Authenticated, Unauthenticated } from 'convex/react'
 import { BarLoader } from 'react-spinners'
 import { useStoreUser } from '@/hooks/use-store-user'
 import { Building, Plus, Ticket } from 'lucide-react'
+import { OnboardingModal } from './onboarding-modal'
 
 const Header = () => {
 
@@ -21,7 +22,7 @@ const Header = () => {
         <div className='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between'>
           {/* Logo */}
           <Link href={"/"} className="flex items-center">
-            <Image 
+            <Image
               src="/kivent_logo_warm.png"
               alt="Spott logo"
               width={500}
@@ -56,19 +57,19 @@ const Header = () => {
 
               <UserButton>
                 <UserButton.MenuItems>
-                  <UserButton.Link 
+                  <UserButton.Link
                     label="My Tickets"
-                    labelIcon={<Ticket size={16}/>}
+                    labelIcon={<Ticket size={16} />}
                     href="/my-tickets"
                   />
 
-                  <UserButton.Link 
+                  <UserButton.Link
                     label="My Events"
-                    labelIcon={<Building size={16}/>}
+                    labelIcon={<Building size={16} />}
                     href="/my-events"
                   />
 
-                  <UserButton.Action label="manageAccount"/>
+                  <UserButton.Action label="manageAccount" />
                 </UserButton.MenuItems>
               </UserButton>
             </Authenticated>
@@ -78,6 +79,7 @@ const Header = () => {
                 <Button size="sm">Sign In</Button>
               </SignInButton>
             </Unauthenticated>
+            <OnboardingModal />
           </div>
         </div>
 
@@ -90,6 +92,7 @@ const Header = () => {
       </nav>
 
       {/* Modals */}
+      {/* <OnboardingModal /> */}
     </>
   )
 }

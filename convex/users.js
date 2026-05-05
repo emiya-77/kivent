@@ -1,3 +1,4 @@
+import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 
@@ -26,8 +27,8 @@ export const store = mutation({
 
     if (user !== null) {
       if (user.name !== name) {
-        await ctx.db.patch(user._id, { 
-          name, 
+        await ctx.db.patch(user._id, {
+          name,
           updatedAt: Date.now(),
         });
       }
@@ -36,39 +37,39 @@ export const store = mutation({
 
     // 2. Use the local variable 'name' so it's guaranteed to be a string
     return await ctx.db.insert("users", {
-        name: name, 
-        tokenIdentifier: identity.tokenIdentifier,
-        email: email,
-        imageUrl: identity.pictureUrl || identity.customClaims?.picture || "",
-        hasCompletedOnboarding: false,
-        freeEventsCreated: 0,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+      name: name,
+      tokenIdentifier: identity.tokenIdentifier,
+      email: email,
+      imageUrl: identity.pictureUrl || identity.customClaims?.picture || "",
+      hasCompletedOnboarding: false,
+      freeEventsCreated: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
   },
 });
 
 
 export const getCurrentUser = query({
-    handler: async (ctx) => {
-        const identity = await ctx.auth.getUserIdentity();
-        if (!identity) {
-            throw new Error("Called getCurrentUser without authentication present");
-        }
-
-        const user = await ctx.db
-            .query("users")
-            .withIndex("by_token", (q) =>
-                q.eq("tokenIdentifier", identity.tokenIdentifier),
-            )
-            .unique();
-        
-        if (!user) {
-            throw new Error("User not found");
-        }
-            
-        return user;
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Called getCurrentUser without authentication present");
     }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
+  }
 })
 
 
