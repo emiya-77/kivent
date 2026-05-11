@@ -1,5 +1,5 @@
 import { v } from "convex/values"
-import { mutation } from "./_generated/server"
+import { mutation, query } from "./_generated/server"
 
 export const createEvent = mutation({
     args: {
@@ -75,7 +75,32 @@ export const createEvent = mutation({
 })
 
 // Get event by slug
+export const getEventBySlug = query({
+    args: {
+        slug: v.string()
+    },
+    handler: async (ctx, args) => {
+        const event = await ctx.db
+            .query("events")
+            .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+            .unique();
+
+        return event;
+    }
+})
 
 // Get events by organizer
+export const getMyEvents = query({
+    handler: async (ctx, args) => {
+        const user = await ctx.runQuery(internal.users.getCurrentUser);
+
+        const events = await ctx.db
+            .query("events")
+            .withIndex("by_organizer", (q) => q.eq("organizerId", user._id))
+            .collect();
+
+        return events;
+    }
+})
 
 // Delete event
