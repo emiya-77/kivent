@@ -2,12 +2,16 @@
 
 import z from "zod";
 import { useRouter } from "next/navigation"
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { useConvexQuery } from "@/hooks/use-convex-query";
+import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { districts_en, divisions_en } from "bangladesh-location-data";
+import { useForm } from "react-hook-form";
+import UpgradeModal from "@/components/upgrade-modal";
+import Image from "next/image";
+import { UnsplashImagePicker } from "@/components/unsplash-image-picker";
 
 // HH:MM in 24h
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -34,7 +38,7 @@ const eventSchema = z.object({
     ticketType: z.enum(["free", "paid"]).default("free"),
     ticketPrice: z.number().optional(),
     coverImage: z.string().optional(),
-    themeColor: z.string().default("#C76E00"),
+    themeColor: z.string().default("#CF8F30"),
 })
 
 const CreateEvent = () => {
@@ -63,12 +67,12 @@ const CreateEvent = () => {
         control,
         formState: { errors }
     } = useForm({
-        resolver: zodResolver(),
+        resolver: zodResolver(eventSchema),
         defaultValues: {
             locationType: "physical",
             ticketType: "free",
             capacity: 50,
-            themeColor: "#C76E00",
+            themeColor: "#CF8F30",
             category: "",
             state: "",
             city: "",
@@ -96,8 +100,77 @@ const CreateEvent = () => {
         return districts[state.value] || []
     }, [selectedState, bdDivisions, districts])
 
+    // Color presets - show all for Pro, only default for Free
+    const colorPresets = [
+        "#CF8F30", // Default color (always available)
+        ...(hasPro ? ["#4c1d95", "#065f46", "#92400e", "#7f1d1d", "#831843"] : []),
+    ];
+
     return (
-        <div>CreateEvent</div>
+        <div
+            style={{
+                backgroundColor: themeColor
+            }}
+            className="min-h-screen transition-colors duration-300 px-6 py-8 -mt-6 md:-mt-16 lg:-mt-5 lg:rounded-md"
+        >
+            <div className="max-w-6xl mx-auto flex flex-col gap-5 md:flex-row justify-between mb-10">
+                <div>
+                    <h1 className="text-4xl font-bold">Create Event</h1>
+                    {!hasPro && (
+                        <p className="text-sm text-muted-foreground">
+                            Free: {currentUser?.freeEventsCreated || 0}/1 events created
+                        </p>
+                    )}
+                </div>
+
+                {/* AI Event Creator */}
+            </div>
+
+            <div className="max-w-6xl mx-auto grid md:grid-cols-[320px_1fr] gap-10">
+                {/* Left: Image + Theme */}
+                <div className="space-y-6">
+                    <div className="aspect-square w-full rounded-xl overflow-hidden flex items-center justify-center cursor-pointer border"
+                        onClick={() => setShowImagePicker(true)}
+                    >
+                        {coverImage ? (
+                            <Image
+                                src={coverImage}
+                                alt="Cover"
+                                className="w-full h-full object-cover"
+                                width={500}
+                                height={500}
+                            />
+                        ) : (
+                            <span className="opacity-60 text-sm">
+                                Click to add cover image
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right: Form */}
+                <div>Right</div>
+            </div>
+
+            {/* Unsplash Picker */}
+            {showImagePicker && (
+                <UnsplashImagePicker
+                    isOpen={showImagePicker}
+                    onClose={() => setShowImagePicker(false)}
+                    onSelect={(url) => {
+                        setValue("coverImage", url);
+                        setShowImagePicker(false)
+                    }}
+                />
+            )}
+
+            {/* Upgrade Modal */}
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                trigger={upgradeReason}
+            />
+        </div>
     )
 }
 
