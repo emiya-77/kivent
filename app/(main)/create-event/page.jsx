@@ -7,6 +7,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod"
+import { districts_en, divisions_en } from "bangladesh-location-data";
 
 // HH:MM in 24h
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -54,7 +55,14 @@ const CreateEvent = () => {
         api.events.createEvent
     );
 
-    useForm({
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        control,
+        formState: { errors }
+    } = useForm({
         resolver: zodResolver(),
         defaultValues: {
             locationType: "physical",
@@ -68,6 +76,25 @@ const CreateEvent = () => {
             endTime: "",
         }
     })
+
+    const themeColor = watch("themeColor");
+    const ticketType = watch("ticketType");
+    const selectedState = watch("selectedState");
+    const startDate = watch("startDate");
+    const endDate = watch("endDate");
+    const coverImage = watch("coverImage");
+
+    const bdDivisions = divisions_en;
+    const districts = districts_en;
+    const bdDistricts = useMemo(() => {
+        if (!selectedState) return [];
+        const state = bdDivisions.find((s) => {
+            if (s.title === selectedState) return s.value
+        });
+
+        if (!state) return [];
+        return districts[state.value] || []
+    }, [selectedState, bdDivisions, districts])
 
     return (
         <div>CreateEvent</div>
