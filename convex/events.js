@@ -91,7 +91,7 @@ export const getEventBySlug = query({
 
 // Get events by organizer
 export const getMyEvents = query({
-    handler: async (ctx, args) => {
+    handler: async (ctx) => {
         const user = await ctx.runQuery(internal.users.getCurrentUser);
 
         const events = await ctx.db
@@ -104,3 +104,44 @@ export const getMyEvents = query({
 })
 
 // Delete event
+export const deleteEvent = mutation({
+    args: {
+        eventId: v.id("events"),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.runQuery(internal.users.getCurrentUser);
+
+        const event = await ctx.db.get(args.eventId);
+        if (!event) {
+            throw new Error("Event not found");
+        }
+
+        // Check if the user is the organizer
+        if (event.organizerId !== user._id) {
+            throw new Error("You are not authorized to delete this event");
+        }
+
+        // Delete all registrations for this event
+        const registrations = await ctx.db
+            .query("registration")
+            .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+            .collect();
+
+        for (const registration of registrations) {
+            await ctx.db.delete(registration._id);
+        }
+
+        // Delete the event
+        await ctx.db.delete(args.eventId);
+
+        if (user.freeEventsCreated > 0) {
+            await ctx.db.patch(user._id, {
+                freeEventsCreated: user.freeEventsCreated - 1,
+            })
+        }
+
+        return {
+            success: true
+        };
+    }
+})
