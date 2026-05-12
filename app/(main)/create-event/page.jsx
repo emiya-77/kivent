@@ -94,7 +94,7 @@ const CreateEvent = () => {
 
     const themeColor = watch("themeColor");
     const ticketType = watch("ticketType");
-    const selectedState = watch("selectedState");
+    const selectedState = watch("state");
     const startDate = watch("startDate");
     const endDate = watch("endDate");
     const coverImage = watch("coverImage");
@@ -334,7 +334,7 @@ const CreateEvent = () => {
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select category" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="mt-8">
                                         {CATEGORIES.map((cat) => (
                                             <SelectItem key={cat.id} value={cat.id}>
                                                 {cat.icon} {cat.label}
@@ -347,6 +347,114 @@ const CreateEvent = () => {
 
                         {errors.category && (
                             <p className="text-sm text-red-400">{errors.category?.message}</p>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-sm">Location</Label>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Controller
+                                control={control}
+                                name="state"
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={(val) => {
+                                            field.onChange(val);
+                                            setValue("city", "")
+                                        }}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select state" />
+                                        </SelectTrigger>
+                                        <SelectContent className="mt-8">
+                                            {bdDivisions.map((s) => (
+                                                <SelectItem key={s.value} value={s.title}>
+                                                    {s.title}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+
+                            <Controller
+                                control={control}
+                                name="city"
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        disabled={!selectedState}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue
+                                                placeholder={
+                                                    selectedState ? "Select district" : "Select division first"
+                                                }
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent className="mt-8">
+                                            {bdDistricts.map((c) => (
+                                                <SelectItem key={c.value} value={c.title}>
+                                                    {c.title}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                        </div>
+
+                        <div className="space-y-2 mt-6">
+                            <Label className="text-sm">Venue Details</Label>
+
+                            <Input
+                                {...register("venue")}
+                                placeholder="Venue link (Google Maps Link)"
+                                type="url"
+                            />
+                            {errors.venue && (
+                                <p className="text-sm text-red-400">{errors.venue.message}</p>
+                            )}
+
+                            <Input
+                                {...register("address")}
+                                placeholder="Full address / street / building (optional)"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-3">
+                        <Label className="text-sm">Tickets</Label>
+
+                        <div className="flex items-center gap-6">
+                            <Label className="flex items-center gap-2">
+                                <Input
+                                    type="radio"
+                                    value="free"
+                                    {...register("ticketType")}
+                                    defaultChecked
+                                />
+                                Free
+                            </Label>
+                            <Label className="flex items-center gap-2">
+                                <Input
+                                    type="radio"
+                                    value="paid"
+                                    {...register("ticketType")}
+                                />
+                                Free
+                            </Label>
+                        </div>
+
+                        {ticketType === "paid" && (
+                            <Input
+                                type="number"
+                                placeholder="Ticket price (BDT)"
+                                {...register("ticketPrice", { valueAsNumber: true })}
+                            />
                         )}
                     </div>
                 </form>
