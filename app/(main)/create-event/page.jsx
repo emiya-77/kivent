@@ -344,6 +344,10 @@ const CreateEvent = () => {
                                 </Select>
                             )}
                         />
+
+                        {errors.category && (
+                            <p className="text-sm text-red-400">{errors.category?.message}</p>
+                        )}
                     </div>
                 </form>
             </div>
