@@ -15,7 +15,7 @@ import Image from "next/image";
 import { UnsplashImagePicker } from "@/components/unsplash-image-picker";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Crown } from "lucide-react";
+import { Crown, Sparkles } from "lucide-react";
 
 // HH:MM in 24h
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -42,7 +42,7 @@ const eventSchema = z.object({
     ticketType: z.enum(["free", "paid"]).default("free"),
     ticketPrice: z.number().optional(),
     coverImage: z.string().optional(),
-    themeColor: z.string().default("#CF8F30"),
+    themeColor: z.string().default("#C76E00"),
 })
 
 const CreateEvent = () => {
@@ -76,7 +76,7 @@ const CreateEvent = () => {
             locationType: "physical",
             ticketType: "free",
             capacity: 50,
-            themeColor: "#CF8F30",
+            themeColor: "#C76E00",
             category: "",
             state: "",
             city: "",
@@ -106,9 +106,19 @@ const CreateEvent = () => {
 
     // Color presets - show all for Pro, only default for Free
     const colorPresets = [
-        "#CF8F30", // Default color (always available)
+        "#C76E00", // Default color (always available)
         ...(hasPro ? ["#4c1d95", "#065f46", "#92400e", "#7f1d1d", "#831843"] : []),
     ];
+
+    const handleColorClick = (color) => {
+        // If not default color and user doesn't have Pro
+        if (color !== "#C76E00" && !hasPro) {
+            setUpgradeReason("color");
+            setShowUpgradeModal(true);
+            return;
+        }
+        setValue("themeColor", color);
+    }
 
     return (
         <div
@@ -161,6 +171,47 @@ const CreateEvent = () => {
                                 </Badge>
                             )}
                         </div>
+                        <div className="flex gap-2 flex-wrap">
+                            {colorPresets.map((color) => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    className={`w-10 h-10 rounded-full border-2 transition-all ${!hasPro && color !== "#C76E00"
+                                        ? "opacity-40 cursor-not-allowed"
+                                        : "hover:scale-110"
+                                        }`}
+                                    style={{
+                                        backgroundColor: color,
+                                        borderColor: themeColor === color ? "white" : "transparent",
+                                    }}
+                                    onClick={() => handleColorClick(color)}
+                                    title={
+                                        !hasPro && color !== "#C76E00"
+                                            ? "Upgrade to Pro for custom colors"
+                                            : ""
+                                    }
+                                />
+                            ))}
+
+                            {!hasPro && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setUpgradeReason("color");
+                                        setShowUpgradeModal(true);
+                                    }}
+                                    className="w-10 h-10 rounded-full border-2 border-dashed border-orange-300 flex items-center justify-center hover:border-orange-500 transition-colors"
+                                    title="Unlock more colors with Pro"
+                                >
+                                    <Sparkles className="w-5 h-5 text-orange-400" />
+                                </button>
+                            )}
+                        </div>
+                        {!hasPro && (
+                            <p className="text-xs text-muted-foreground">
+                                Upgrade to Pro to unlock custom theme colors
+                            </p>
+                        )}
                     </div>
                 </div>
 
