@@ -23,6 +23,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CATEGORIES } from "@/lib/data";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 
 // HH:MM in 24h
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -138,7 +140,74 @@ const CreateEvent = () => {
         setValue("themeColor", color);
     }
 
-    const onSubmit = async (data) => { }
+    const combineDateTime = (date, time) => {
+        if (!date || !time) return null;
+        const [hh, mm] = time.split(":").map(Number);
+
+        const d = new Date(date);
+        d.setHours(hh, mm, 0, 0)
+        return d;
+    }
+
+    const onSubmit = async (data) => {
+        try {
+            const start = combineDateTime(data.startDate, data.startTime);
+            const end = combineDateTime(data.endDate, data.endTime);
+
+            if (!start || !end) {
+                toast.error("Please select both date and time for start and end.");
+                return;
+            }
+
+            if (end.getTime() <= start.getTime()) {
+                toast.error("End date/time must be after start date/time.");
+                return;
+            }
+
+            // Check event limit for Free users
+            if (!hasPro && currentUser?.freeEventsCreated >= 1) {
+                setUpgradeReason("limit");
+                setShowUpgradeModal(true);
+                return;
+            }
+
+            if (data.themeColor !== "#C76E00" && !hasPro) {
+                setUpgradeReason("color");
+                setShowUpgradeModal(true);
+                return;
+            }
+
+            await createEvent({
+                title: data.title,
+                description: data.description,
+                category: data.category,
+                tags: [data.category],
+
+                startDate: start.getTime(),
+                endDate: end.getTime(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+
+                locationType: data.locationType,
+                venue: data.venue || undefined,
+                address: data.address || undefined,
+                city: data.city,
+                state: data.state || undefined,
+                country: "Bangladesh",
+
+                capacity: data.capacity,
+                ticketType: data.ticketType,
+                ticketPrice: data.ticketPrice || undefined,
+                coverImage: data.coverImage || undefined,
+                themeColor: data.themeColor,
+                hasPro,
+            })
+
+            toast.success("Event created successfully!");
+            router.push("/my-events");
+        } catch (error) {
+            toast.error(error.message || "Failed to create event");
+        }
+    }
 
     return (
         <div
@@ -424,6 +493,20 @@ const CreateEvent = () => {
                                 placeholder="Full address / street / building (optional)"
                             />
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>Description</Label>
+                        <Textarea
+                            {...register("description")}
+                            placeholder="Tell people about your event..."
+                            rows={4}
+                        />
+                        {errors.description && (
+                            <p className="text-sm text-red-400">
+                                {errors.description?.message}
+                            </p>
+                        )}
                     </div>
 
                     <div className="space-y-3">

@@ -1,5 +1,6 @@
 import { v } from "convex/values"
 import { mutation, query } from "./_generated/server"
+import { internal } from "./_generated/api";
 
 export const createEvent = mutation({
     args: {
@@ -31,19 +32,19 @@ export const createEvent = mutation({
             const user = await ctx.runQuery(internal.users.getCurrentUser);
 
             // server side check: verify event limit for free users
-            if (!hasPro && user.freeEventsCreated >= 1) {
+            if (!args.hasPro && user.freeEventsCreated >= 1) {
                 throw new Error(
                     "Free event limit reached. Please upgrade to Pro to create more events."
                 )
             }
 
             const defaultColor = '#c76e00';
-            if (!hasPro && args.themeColor && args.themeColor !== defaultColor) {
+            if (!args.hasPro && args.themeColor && args.themeColor !== defaultColor) {
                 throw new Error(
                     "Custom theme colors are a Pro feature. Please upgrade to Pro."
                 );
             }
-            const themeColor = hasPro ? args.themeColor : defaultColor;
+            const themeColor = args.hasPro ? args.themeColor : defaultColor;
 
             // Generate slug from title
             const slug = args.title
@@ -69,7 +70,7 @@ export const createEvent = mutation({
 
             return eventId;
         } catch (error) {
-            throw new Error(`Failed to create event: $(error.message)`);
+            throw new Error(`Failed to create event: ${error.message}`);
         }
     }
 })

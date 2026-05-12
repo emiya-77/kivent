@@ -33,6 +33,7 @@ export default defineSchema({
         title: v.string(),
         description: v.string(),
         slug: v.string(),
+        hasPro: v.optional(v.boolean()),
 
         // Organizer
         organizerId: v.id("users"),

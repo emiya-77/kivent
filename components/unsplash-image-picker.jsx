@@ -33,8 +33,6 @@ export function UnsplashImagePicker({ isOpen, onClose, onSelect }) {
         }
     }
 
-    console.log(images);
-
     const handleSearch = (e) => {
         e.preventDefault();
         searchImages(query);
