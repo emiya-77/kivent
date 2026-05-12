@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 "use client"
 
 import z from "zod";
@@ -12,6 +13,9 @@ import { useForm } from "react-hook-form";
 import UpgradeModal from "@/components/upgrade-modal";
 import Image from "next/image";
 import { UnsplashImagePicker } from "@/components/unsplash-image-picker";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Crown } from "lucide-react";
 
 // HH:MM in 24h
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -145,6 +149,18 @@ const CreateEvent = () => {
                                 Click to add cover image
                             </span>
                         )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label className="text-sm">Theme Color</Label>
+                            {!hasPro && (
+                                <Badge variant="secondary" className="text-xs gap-1">
+                                    <Crown className="w-3 h-3" />
+                                    Pro
+                                </Badge>
+                            )}
+                        </div>
                     </div>
                 </div>
 
