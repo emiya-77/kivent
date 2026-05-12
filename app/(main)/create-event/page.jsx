@@ -9,13 +9,20 @@ import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { districts_en, divisions_en } from "bangladesh-location-data";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import UpgradeModal from "@/components/upgrade-modal";
 import Image from "next/image";
 import { UnsplashImagePicker } from "@/components/unsplash-image-picker";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Sparkles } from "lucide-react";
+import { CalendarIcon, Crown, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CATEGORIES } from "@/lib/data";
 
 // HH:MM in 24h
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -104,6 +111,17 @@ const CreateEvent = () => {
         return districts[state.value] || []
     }, [selectedState, bdDivisions, districts])
 
+    // If above bdDistricts causes trouble then try this:
+    // const bdDistricts = useMemo(() => {
+    //     if (!selectedState) return [];
+    //     // Find the division object
+    //     const stateObj = bdDivisions.find((s) => s.title === selectedState);
+
+    //     // If found, use stateObj.value to index into districts
+    //     if (!stateObj) return [];
+    //     return districts[stateObj.value] || [];
+    // }, [selectedState, bdDivisions, districts]);
+
     // Color presets - show all for Pro, only default for Free
     const colorPresets = [
         "#C76E00", // Default color (always available)
@@ -119,6 +137,8 @@ const CreateEvent = () => {
         }
         setValue("themeColor", color);
     }
+
+    const onSubmit = async (data) => { }
 
     return (
         <div
@@ -216,7 +236,116 @@ const CreateEvent = () => {
                 </div>
 
                 {/* Right: Form */}
-                <div>Right</div>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                    <div>
+                        <Input
+                            {...register("title")}
+                            placeholder="Event Name"
+                            className="text-3xl font-semibold bg-transparent border-none focus-visible:ring-0"
+                        />
+                        {errors.title && (
+                            <p className="text-sm text-red-400 mt-1">
+                                {errors.title.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label className="text-sm">Start</Label>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full justify-center"
+                                        >
+                                            {startDate ? format(startDate, "PPP") : "Pick date"}
+                                            <CalendarIcon className="w-4 h-4 opacity-60" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="p-0 w-full">
+                                        <Calendar
+                                            mode="single"
+                                            selected={startDate}
+                                            onSelect={(date) => setValue("startDate", date)}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <Input
+                                    type="time"
+                                    {...register("startTime")}
+                                    placeholder="hh:mm"
+                                />
+                            </div>
+                            {(errors.startDate || errors.startTime) && (
+                                <p className="text-sm text-red-400">
+                                    {errors.startDate?.message || errors.startTime?.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-sm">End</Label>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full justify-center"
+                                        >
+                                            {endDate ? format(endDate, "PPP") : "Pick date"}
+                                            <CalendarIcon className="w-4 h-4 opacity-60" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="p-0 w-full">
+                                        <Calendar
+                                            mode="single"
+                                            selected={endDate}
+                                            onSelect={(date) => setValue("endDate", date)}
+                                            disabled={(date) => date < (startDate || new Date())}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <Input
+                                    type="time"
+                                    {...register("endTime")}
+                                    placeholder="hh:mm"
+                                />
+                            </div>
+                            {(errors.endDate || errors.endTime) && (
+                                <p className="text-sm text-red-400">
+                                    {errors.endDate?.message || errors.endTime?.message}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-sm">Category</Label>
+
+                        <Controller
+                            control={control}
+                            name="category"
+                            render={({ field }) => (
+                                <Select value={field.value} onValueChange={field.onChange}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {CATEGORIES.map((cat) => (
+                                            <SelectItem key={cat.id} value={cat.id}>
+                                                {cat.icon} {cat.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                    </div>
+                </form>
             </div>
 
             {/* Unsplash Picker */}
