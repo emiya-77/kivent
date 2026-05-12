@@ -15,7 +15,7 @@ import Image from "next/image";
 import { UnsplashImagePicker } from "@/components/unsplash-image-picker";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, Crown, Sparkles } from "lucide-react";
+import { CalendarIcon, Crown, Loader2, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -445,7 +445,7 @@ const CreateEvent = () => {
                                     value="paid"
                                     {...register("ticketType")}
                                 />
-                                Free
+                                Paid
                             </Label>
                         </div>
 
@@ -462,13 +462,27 @@ const CreateEvent = () => {
                         <Label className="text-sm">Capacity</Label>
                         <Input
                             type="number"
-                            {...register("capacity", { valueAsNumber })}
+                            {...register("capacity", { valueAsNumber: true })}
                             placeholder="Ex: 100"
                         />
                         {errors.capacity && (
                             <p className="text-sm text-red-400">{errors.capacity?.message}</p>
                         )}
                     </div>
+
+                    <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full py-6 text-lg rounded-xl"
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...
+                            </>
+                        ) : (
+                            "Create Event"
+                        )}
+                    </Button>
                 </form>
             </div>
 
