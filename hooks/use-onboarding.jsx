@@ -12,8 +12,6 @@ export function useOnboarding() {
     const pathname = usePathname();
     const router = useRouter();
 
-    console.log("from useOnboarding: ", pathname)
-
     const { data: currentUser, isLoading } = useConvexQuery(
         api.users.getCurrentUser
     );
@@ -24,7 +22,6 @@ export function useOnboarding() {
         if (!currentUser.hasCompletedOnboarding) {
             const requiresOnboarding = ATTENDEE_PAGES.some((page) => pathname.startsWith(page));
 
-            console.log("meow: ", requiresOnboarding)
             if (requiresOnboarding) {
                 // eslint-disable-next-line react-hooks/set-state-in-effect
                 setShowOnboarding(true);

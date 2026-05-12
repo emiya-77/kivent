@@ -33,6 +33,7 @@ export default defineSchema({
         title: v.string(),
         description: v.string(),
         slug: v.string(),
+        hasPro: v.optional(v.boolean()),
 
         // Organizer
         organizerId: v.id("users"),
@@ -48,7 +49,7 @@ export default defineSchema({
         timezone: v.string(),
 
         // Location
-        locationType: v.union(v.literal("physical"), v.literal("virtual")),
+        locationType: v.union(v.literal("physical"), v.literal("online")),
         venue: v.optional(v.string()),
         address: v.optional(v.string()),
         city: v.string(),
@@ -64,21 +65,21 @@ export default defineSchema({
         // Customization
         coverImage: v.optional(v.string()),
         themeColor: v.optional(v.string()),
-        
+
         // Timestamps
         createdAt: v.number(),
         updatedAt: v.number(),
     })
-    .index("by_organizer", ["organizerId"])
-    .index("by_category", ["category"])
-    .index("by_start_date", ["startDate"])
-    .index("by_slug", ["slug"])
-    .searchIndex("search_title", {searchField: "title"}),
+        .index("by_organizer", ["organizerId"])
+        .index("by_category", ["category"])
+        .index("by_start_date", ["startDate"])
+        .index("by_slug", ["slug"])
+        .searchIndex("search_title", { searchField: "title" }),
 
     registrations: defineTable({
         eventId: v.id("events"),
         userId: v.id("users"),
-        
+
         // Attendee info
         attendeeName: v.string(),
         attendeeEmail: v.string(),
@@ -95,8 +96,8 @@ export default defineSchema({
 
         registeredAt: v.number(),
     })
-    .index("by_event", ["eventId"])
-    .index("by_user", ["userId"])
-    .index("by_event_user", ["eventId", "userId"])
-    .index("by_qr_code", ["qrCode"]),
+        .index("by_event", ["eventId"])
+        .index("by_user", ["userId"])
+        .index("by_event_user", ["eventId", "userId"])
+        .index("by_qr_code", ["qrCode"]),
 })

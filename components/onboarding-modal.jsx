@@ -46,13 +46,11 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
         const selectedStateId = bdDivisions.find((s) => {
             if (s.title === location.state) return s.value
         });
-        console.log("hello: ", selectedStateId)
 
         if (!selectedStateId) return [];
         return districts[selectedStateId.value] || []
     }, [location.state, bdDivisions, districts])
 
-    // console.log("in onboarding-modal: ", bdDivisions, bdDistricts)
 
     const progress = (step / 2) * 100;
 
@@ -206,7 +204,6 @@ export function OnboardingModal({ isOpen, onClose, onComplete }) {
                                         <SelectContent>
                                             {bdDistricts.length > 0 ? (
                                                 bdDistricts.map((district) => {
-                                                    console.log("meow: ", district.title)
                                                     return <SelectItem key={district.title} value={district.title}>
                                                         {district.title}
                                                     </SelectItem>

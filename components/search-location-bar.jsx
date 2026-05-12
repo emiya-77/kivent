@@ -198,7 +198,6 @@ const SearchLocationBar = () => {
                 <SelectContent>
                     {bdDistricts.length > 0 ? (
                         bdDistricts.map((district) => {
-                            console.log("meow: ", district.title)
                             return <SelectItem key={district.title} value={district.title}>
                                 {district.title}
                             </SelectItem>
