@@ -156,7 +156,7 @@ Make sure you have installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/kivent.git
+git clone https://github.com/emiya-77/kivent.git
 
 # Navigate to project folder
 cd kivent
@@ -289,8 +289,8 @@ This project is licensed under the MIT License.
 
 **Your Name**
 
-- GitHub: https://github.com/your-username
-- LinkedIn: https://linkedin.com/in/your-profile
+- GitHub: https://github.com/emiya-77
+- LinkedIn: https://linkedin.com/in/kibria7
 
 ---
 
