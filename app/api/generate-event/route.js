@@ -59,7 +59,10 @@ Rules:
 
         return NextResponse.json(eventData);
     } catch (error) {
-        { error: "Failed to generate event" + error.message },
-        { status: 500 }
+        console.error("Error generating event: ", error);
+        return NextResponse.json(
+            { error: "Failed to generate event" + error.message },
+            { status: 500 }
+        )
     }
 }
