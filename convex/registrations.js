@@ -55,3 +55,17 @@ export const registerForEvent = mutation({
         return registrationId;
     }
 });
+
+export const checkRegistration = query({
+    args: { eventId: v.id("events") },
+    handler: async (ctx, args) => {
+        const user = await ctx.runQuery(internal.users.getCurrentUser);
+
+        const registration = await ctx.db
+            .query("registration")
+            .withIndex("by_event_user", (q) => q.eq("eventId", args.eventId).eq("userId", user?._id))
+            .unique();
+
+        return registration;
+    }
+})
