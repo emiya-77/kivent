@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 
 const generateQRCode = () => {
@@ -62,7 +62,7 @@ export const checkRegistration = query({
         const user = await ctx.runQuery(internal.users.getCurrentUser);
 
         const registration = await ctx.db
-            .query("registration")
+            .query("registrations")
             .withIndex("by_event_user", (q) => q.eq("eventId", args.eventId).eq("userId", user?._id))
             .unique();
 
