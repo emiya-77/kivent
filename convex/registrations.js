@@ -69,3 +69,24 @@ export const checkRegistration = query({
         return registration;
     }
 })
+
+export const getMyRegistrations = query({
+    handler: async (ctx) => {
+        const user = await ctx.runQuery(internal.users.getCurrentUser);
+
+        const registrations = await ctx.db
+            .query("registrations")
+            .withIndex("by_user", (q) => q.eq("userId", user?._id))
+            .order("desc")
+            .collect();
+
+        const registrationsWithEvents = await Promise.all(
+            registrations.map(async (reg) => {
+                const event = await ctx.db.get(reg.eventId);
+                return { ...reg, event };
+            })
+        )
+
+        return registrationsWithEvents;
+    }
+})
