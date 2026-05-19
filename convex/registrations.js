@@ -126,6 +126,30 @@ export const cancelRegistration = mutation({
     }
 })
 
+export const getEventRegistrations = query({
+    args: { eventId: v.id("events") },
+    handler: async (ctx, args) => {
+        const user = await ctx.runQuery(internal.users.getCurrentUser);
+
+        const event = await ctx.db.get(args.eventId);
+        if (!event) {
+            throw new Error("Event not found");
+        }
+
+        // Check if user is the organizer
+        if (event.organizerId !== user._id) {
+            throw new Error("You are not authorized to view registrations");
+        }
+
+        const registrations = await ctx.db
+            .query("registrations")
+            .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+            .collect();
+
+        return registrations;
+    },
+});
+
 export const checkInAttendee = mutation({
     args: { qrCode: v.string() },
     handler: async (ctx, args) => {
@@ -171,7 +195,7 @@ export const checkInAttendee = mutation({
             registration: {
                 ...registration,
                 checkedIn: true,
-                checkedInAt: Date.now(),
+                checkedInAt: Date.now()
             }
         }
     }
