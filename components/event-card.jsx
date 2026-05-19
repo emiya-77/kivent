@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
-import { Calendar, MapPin, Trash2, Users } from 'lucide-react'
+import { Calendar, Eye, MapPin, QrCode, Trash2, Users, X } from 'lucide-react'
 import { getCategoryIcon, getCategoryLabel } from '@/lib/data'
 import { Button } from './ui/button'
 import { format } from 'date-fns'
@@ -10,12 +10,12 @@ import { Badge } from './ui/badge'
 const EventCard = ({
     event,
     onClick,
-    showActions = false,
+    action = null, // "event" | "ticket" | null
     onDelete,
     variant = "grid", // "grid" or "list"
     className = "",
 }) => {
-    if(variant === "list"){
+    if (variant === "list") {
         return (
             <Card
                 className={`py-0 group cursor-pointer hover:shadow-lg transition-all hover:border-orange-500/50 ${className}`}
@@ -24,7 +24,7 @@ const EventCard = ({
                 <CardContent className="p-3 flex gap-3">
                     <div className='relative w-20 h-20 rounded-lg shrink-0 overflow-hidden'>
                         {event.coverImage ? (
-                            <Image 
+                            <Image
                                 src={event.coverImage}
                                 alt={event.title}
                                 fill
@@ -66,99 +66,114 @@ const EventCard = ({
             </Card>
         )
     }
-  return (
-    <Card
-        className={`overflow-hidden group pt-0 ${onClick ? "cursor-pointer hover:shadow-lg transition-all hover:border-orange-500/50" : ""} ${className}`}
-        onClick={onClick}
-    >
-        <div className='relative h-48 overflow-hidden'>
-            {event.coverImage ? (
-                <Image 
-                    src={event.coverImage}
-                    alt={event.title}
-                    fill
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                />
-            ) : (
-                <div
-                    className="w-full h-full flex items-center justify-center text-4xl"
-                    style={{
-                        backgroundColor: event.themeColor
-                    }}
-                >
-                    {getCategoryIcon(event.category)}
-                </div>
-            )}
-            <div className='absolute top-3 right-3'>
-                <Badge variant="secondary">
-                    {event.ticketType === "free" ? "Free" : "Paid"}
-                </Badge>
-            </div>
-        </div>
-
-        <CardContent className="space-y-3">
-            <div>
-                <Badge variant="outline" className='mb-2'>
-                    {getCategoryIcon(event.category)} {getCategoryLabel(event.category)}
-                </Badge>
-                <h3 className='font-semibold text-lg line-clamp-2 group-hover:text-orange-400 transition-colors'>
-                    {event.title}
-                </h3>
-            </div>
-
-            <div className='space-y-2 text-sm text-muted-foreground'>
-                <div className='flex items-center gap-2'>
-                    <Calendar className='w-4 h-4' />
-                    <span>{format(event.startDate, "PPP")}</span>
-                </div>
-
-                <div className='flex items-center gap-2'>
-                    <MapPin className='w-4 h-4' />
-                    <span>
-                        {event.locationType === "online" ? "Online Event" : `${event.city}, ${event.state || event.country}`}
-                    </span>
-                </div>
-            </div>
-
-            <div className='flex items-center gap-2'>
-                <Users className="w-4 h-4" />
-                <span>
-                    {event.registrationCount} / {event.capacity} registered
-                </span>
-            </div>
-
-            {showActions && (
-                <div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onClick?.(e);
+    return (
+        <Card
+            className={`overflow-hidden group pt-0 ${onClick ? "cursor-pointer hover:shadow-lg transition-all hover:border-orange-500/50" : ""} ${className}`}
+            onClick={onClick}
+        >
+            <div className='relative h-48 overflow-hidden'>
+                {event.coverImage ? (
+                    <Image
+                        src={event.coverImage}
+                        alt={event.title}
+                        fill
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                ) : (
+                    <div
+                        className="w-full h-full flex items-center justify-center text-4xl"
+                        style={{
+                            backgroundColor: event.themeColor
                         }}
                     >
-                        View
-                    </Button>
-
-                    {onDelete && (
-                        <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(event._id);
-                        }}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                        >
-                            <Trash2 className='w-4 h-4' />
-                        </Button>
-                    )}
+                        {getCategoryIcon(event.category)}
+                    </div>
+                )}
+                <div className='absolute top-3 right-3'>
+                    <Badge variant="secondary">
+                        {event.ticketType === "free" ? "Free" : "Paid"}
+                    </Badge>
                 </div>
-            )}
-        </CardContent>
-    </Card>
-  )
+            </div>
+
+            <CardContent className="space-y-3">
+                <div>
+                    <Badge variant="outline" className='mb-2'>
+                        {getCategoryIcon(event.category)} {getCategoryLabel(event.category)}
+                    </Badge>
+                    <h3 className='font-semibold text-lg line-clamp-2 group-hover:text-orange-400 transition-colors'>
+                        {event.title}
+                    </h3>
+                </div>
+
+                <div className='space-y-2 text-sm text-muted-foreground'>
+                    <div className='flex items-center gap-2'>
+                        <Calendar className='w-4 h-4' />
+                        <span>{format(event.startDate, "PPP")}</span>
+                    </div>
+
+                    <div className='flex items-center gap-2'>
+                        <MapPin className='w-4 h-4' />
+                        <span>
+                            {event.locationType === "online" ? "Online Event" : `${event.city}, ${event.state || event.country}`}
+                        </span>
+                    </div>
+                </div>
+
+                <div className='flex items-center gap-2'>
+                    <Users className="w-4 h-4" />
+                    <span>
+                        {event.registrationCount} / {event.capacity} registered
+                    </span>
+                </div>
+
+                {action && (
+                    <div className="flex gap-2 pt-2">
+                        {/* Primary button */}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-2"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClick?.(e);
+                            }}
+                        >
+                            {action === "event" ? (
+                                <>
+                                    <Eye className="w-4 h-4" />
+                                    View
+                                </>
+                            ) : (
+                                <>
+                                    <QrCode className="w-4 h-4" />
+                                    Show Ticket
+                                </>
+                            )}
+                        </Button>
+
+                        {onDelete && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete(event._id);
+                                }}
+                            >
+                                {action === "event" ? (
+                                    <Trash2 className="w-4 h-4" />
+                                ) : (
+                                    <X className="w-4 h-4" />
+                                )}
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
 }
 
 export default EventCard
