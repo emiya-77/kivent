@@ -14,6 +14,7 @@ import Image from "next/image";
 import { notFound, useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { AttendeeCard } from "../_components/attendee-card";
+import QRScannerModal from "../_components/qr-scanner-modal";
 
 const EventDashboard = () => {
     const params = useParams();
@@ -328,8 +329,14 @@ const EventDashboard = () => {
                 </Tabs>
             </div>
 
-
             {/* QR Scanner Modal */}
+            {showQRScanner && (
+                <QRScannerModal
+                    isOpen={showQRScanner}
+                    onClose={() => setShowQRScanner(false)}
+                />
+            )}
+
         </div>
     )
 }
