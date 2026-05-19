@@ -125,3 +125,54 @@ export const cancelRegistration = mutation({
         return { success: true }
     }
 })
+
+export const checkInAttendee = mutation({
+    args: { qrCode: v.string() },
+    handler: async (ctx, args) => {
+        const user = await ctx.runQuery(internal.users.getCurrentUser);
+
+        const registration = await ctx.db
+            .query("registrations")
+            .withIndex("by_qr_code", (q) => q.eq("qrCode", args.qrCode))
+            .unique();
+
+        if (!registration) {
+            throw new Error("Invalid QR code");
+        }
+
+        const event = await ctx.db.get(registration.eventId);
+        if (!event) {
+            throw new Error("Event now found");
+        }
+
+        // Check if user is the organizer
+        if (event.organizerId !== user._id) {
+            throw new Error("You are not authorized to check in attendees");
+        }
+
+        // Check if already checked in
+        if (registration.checkedIn) {
+            return {
+                success: false,
+                message: "Already checked in",
+                registration,
+            };
+        }
+
+        // Check in
+        await ctx.db.patch(registration._id, {
+            checkedIn: true,
+            checkedInAt: Date.now(),
+        })
+
+        return {
+            success: true,
+            message: "Check-in successful",
+            registration: {
+                ...registration,
+                checkedIn: true,
+                checkedInAt: Date.now(),
+            }
+        }
+    }
+})
