@@ -3,14 +3,17 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
 import { getCategoryIcon, getCategoryLabel } from "@/lib/data";
 import { format } from "date-fns";
-import { ArrowLeft, Calendar, CheckCircle, Clock, Eye, Loader2, MapPin, QrCode, Trash2, TrendingUp, Users } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle, Clock, Download, Eye, Loader2, MapPin, QrCode, Search, Trash2, TrendingUp, Users } from "lucide-react";
 import Image from "next/image";
 import { notFound, useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { AttendeeCard } from "../_components/attendee-card";
 
 const EventDashboard = () => {
     const params = useParams();
@@ -47,6 +50,42 @@ const EventDashboard = () => {
         } catch (error) {
             toast.error(error.message || "Failed to delete event");
         }
+    };
+
+    const handleExportCSV = () => {
+        if (!registrations || registrations.length === 0) {
+            toast.error("No registrations to export");
+            return;
+        }
+
+        const csvContent = [
+            [
+                "Name",
+                "Email",
+                "Registered At",
+                "Checked In",
+                "Checked In At",
+                "QR Code",
+            ],
+            ...registrations.map((reg) => [
+                reg.attendeeName,
+                reg.attendeeEmail,
+                new Date(reg.registeredAt).toLocaleString(),
+                reg.checkedIn ? "Yes" : "No",
+                reg.checkedInAt ? new Date(reg.checkedInAt).toLocaleString() : "-",
+                reg.qrCode,
+            ]),
+        ]
+            .map((row) => row.join(","))
+            .join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${dashboardData?.event.title || "event"}_registrations.csv`;
+        a.click();
+        toast.success("CSV exported successfully");
     };
 
     if (isLoading || loadingRegistrations) {
@@ -233,10 +272,62 @@ const EventDashboard = () => {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Attendee Management */}
+                <h2 className="text-2xl font-bold mb-4">Attendee Management</h2>
+
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                    <TabsList className="mb-4">
+                        <TabsTrigger value="all">
+                            All ({stats.totalRegistrations})
+                        </TabsTrigger>
+                        <TabsTrigger value="checked-in">
+                            Checked In ({stats.checkedInCount})
+                        </TabsTrigger>
+                        <TabsTrigger value="pending">
+                            Pending ({stats.pendingCount})
+                        </TabsTrigger>
+                    </TabsList>
+
+                    {/* Search and Actions */}
+                    <div className="flex gap-3 mb-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search by name, email, or QR code..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-10"
+                            />
+                        </div>
+                        <Button
+                            variant="outline"
+                            onClick={handleExportCSV}
+                            className="gap-2"
+                        >
+                            <Download className="w-4 h-4" />
+                            Export CSV
+                        </Button>
+                    </div>
+
+                    {/* Attendee List */}
+                    <TabsContent value={activeTab} className="space-y-3 mt-0">
+                        {filteredRegistrations && filteredRegistrations.length > 0 ? (
+                            filteredRegistrations.map((registration) => (
+                                <AttendeeCard
+                                    key={registration._id}
+                                    registration={registration}
+                                />
+                            ))
+                        ) : (
+                            <div className="text-center py-12 text-muted-foreground">
+                                No attendees found
+                            </div>
+                        )}
+                    </TabsContent>
+                </Tabs>
             </div>
 
-            {/* Attendee Management */}
-            <h2 className="text-2xl font-bold mb-4">Attendee Management</h2>
 
             {/* QR Scanner Modal */}
         </div>
