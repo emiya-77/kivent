@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import Spline from '@splinetool/react-spline/next';
 
 export default function Home() {
   return (
@@ -31,15 +32,15 @@ export default function Home() {
           </div>
 
           {/* Right */}
-          <div>
-            <Image
-              src="/hero.png"
-              alt="hero img"
-              width={700}
-              height={700}
-              className="w-full h-auto"
-              priority
-            />
+          <div className="h-[670px] min-w-[650px] relative">
+            <div style={{
+              height: '100%',
+              clipPath: 'inset(0px 0px 60px 0px)' // clips bottom 60px where watermark sits
+            }}>
+              <Spline
+                scene="https://prod.spline.design/2hTmaWyCVzJHhlc4/scene.splinecode"
+              />
+            </div>
           </div>
         </div>
       </section>

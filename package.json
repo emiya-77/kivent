@@ -13,6 +13,7 @@
     "@clerk/ui": "^1.6.7",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
+    "@splinetool/react-spline": "^4.1.0",
     "bangladesh-location-data": "^1.0.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
