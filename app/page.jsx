@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div>
+    <div className="px-6 lg:px-0">
       <section className="pb-16 relative overflow-hidden">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10">
           {/* Left */}
@@ -32,8 +32,8 @@ export default function Home() {
 
           {/* Right */}
           <div>
-            <Image 
-              src="/hero.png" 
+            <Image
+              src="/hero.png"
               alt="hero img"
               width={700}
               height={700}

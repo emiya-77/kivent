@@ -2,14 +2,15 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import Header from "@/components/header";
 import { Inter, Courier_Prime } from 'next/font/google'
-import { ConvexClientProvider } from "./ConvexClientProvider";import { ClerkProvider } from "@clerk/nextjs";
+import { ConvexClientProvider } from "./ConvexClientProvider"; import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from '@clerk/ui/themes'
 import { shadcn } from '@clerk/ui/themes'
 import { Toaster } from "sonner";
+import Footer from "@/components/footer";
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
-  display: 'swap', 
+  display: 'swap',
 })
 
 const courierPrime = Courier_Prime({
@@ -45,7 +46,7 @@ export default function RootLayout({ children }) {
               {/* Header */}
               <Header />
 
-              <main className="relative min-h-screen container mx-auto pt-40 md:pt-32">
+              <main className="relative min-h-screen mx-auto pt-40 md:pt-32"> {/* container */}
                 {/* Glow */}
                 <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
                   <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
@@ -55,12 +56,9 @@ export default function RootLayout({ children }) {
                 <div className="relative z-10 min-h-[70vh]">{children}</div>
 
                 {/* Footer */}
-                <footer className="border-t border-gray-800/50 py-8 px-6 max-w-7xl mx-auto">
-                  <div className="text-sm text-gray-400">Made with ❤️ by kib</div>
-                </footer>
-                <Toaster richColors />
+                <Footer />
               </main>
-
+              <Toaster richColors />
             </ConvexClientProvider>
           </ClerkProvider>
         </ThemeProvider>
