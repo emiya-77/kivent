@@ -15,7 +15,7 @@ export async function POST(req) {
             )
         }
 
-        const model = getAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = getAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const systemPrompt = `You are an event planning assistant. Generate event details based on the user's description.
 
